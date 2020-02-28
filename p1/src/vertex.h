@@ -11,8 +11,8 @@ class Vertex{
     public:
         Vertex(float x, float y, float z);
 
-        static int parse_array(Vertex** vertices, void* buf);
-
+        static Vertex VertexPolar(const float alpha, const float beta, const float rad);
+        static std::tuple<int, Vertex*> parse_array(void* buf);
         static std::tuple<int, void*> serialize_array(Vertex* vertices, int size);
         void print();
 };

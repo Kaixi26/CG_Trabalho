@@ -48,7 +48,7 @@ Primitive* argparse_sphere(int argc, char* argv[]){
 Primitive* argparse_cone(int argc, char* argv[]){
     if(argc != 7){
         printf("WRONG NUMBER OF ARGUMENTS FOR CONE.\n");
-        printf("Usage %s sphere <radius> <height> <slices> <stacks> <filename>", argv[0]);
+        printf("Usage %s sphere <x dimension> <y dimension> <z dimension> <divisions> <filename>", argv[0]);
         return NULL;
     }
     float* tmp = (float*) calloc(4, sizeof(float));

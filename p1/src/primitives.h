@@ -28,6 +28,9 @@ class Primitive {
         static Primitive_type type_parse(const char* str);
     private:
         std::tuple<int,Vertex*> get_vertices_plane();
+        std::tuple<int, Vertex*> get_vertices_sphere();
+        std::tuple<int, Vertex*> get_vertices_cone();
+        std::tuple<int, Vertex*> get_vertices_box();
     public:
         std::tuple<int,Vertex*> get_vertices();
         
