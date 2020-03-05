@@ -42,7 +42,7 @@ const char* help_str = "List of commands:\n"
 "\t\tK move camera in the positive z direction\n"
 "\t\tL move camera in the negative x direction\n"
 "\t\t+ move camera in the positive y direction\n"
-"\t\t+ move camera in the negative y direction\n"
+"\t\t- move camera in the negative y direction\n"
 ;
 
 XMLDocument DOC;
