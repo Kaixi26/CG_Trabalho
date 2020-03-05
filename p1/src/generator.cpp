@@ -16,7 +16,8 @@
 
 Primitive* argparse_plane(int argc, char* argv[]){
     if(argc != 4){
-        printf("WRONG NUMBER OF ARGUMENTS FOR PLANE.\nPLEASE USE 3 ARGUMENTS.\n");
+        printf("WRONG NUMBER OF ARGUMENTS FOR PLANE.\n");
+        printf("Usage %s plane <side_lenght> <filename>\n", argv[0]);
         return NULL;
     }
     float edge = atof(argv[2]);
@@ -31,7 +32,7 @@ Primitive* argparse_plane(int argc, char* argv[]){
 Primitive* argparse_sphere(int argc, char* argv[]){
     if(argc != 6){
         printf("WRONG NUMBER OF ARGUMENTS FOR SPHERE.\n");
-        printf("Usage %s sphere <radius> <slices> <stacks> <filename>", argv[0]);
+        printf("Usage %s sphere <radius> <slices> <stacks> <filename>\n", argv[0]);
         return NULL;
     }
     float* tmp = (float*) calloc(3, sizeof(float));
@@ -48,7 +49,7 @@ Primitive* argparse_sphere(int argc, char* argv[]){
 Primitive* argparse_cone(int argc, char* argv[]){
     if(argc != 7){
         printf("WRONG NUMBER OF ARGUMENTS FOR CONE.\n");
-        printf("Usage %s sphere <x dimension> <y dimension> <z dimension> <divisions> <filename>", argv[0]);
+        printf("Usage %s sphere <x dimension> <y dimension> <z dimension> <divisions> <filename>\n", argv[0]);
         return NULL;
     }
     float* tmp = (float*) calloc(4, sizeof(float));
@@ -65,7 +66,7 @@ Primitive* argparse_cone(int argc, char* argv[]){
 Primitive* argparse_box(int argc, char* argv[]){
     if(argc != 7){
         printf("WRONG NUMBER OF ARGUMENTS FOR CONE.\n");
-        printf("Usage %s sphere <radius> <height> <slices> <stacks> <filename>", argv[0]);
+        printf("Usage %s sphere <radius> <height> <slices> <stacks> <filename>\n", argv[0]);
         return NULL;
     }
     float* tmp = (float*) calloc(4, sizeof(float));
@@ -91,11 +92,17 @@ Primitive* argparse(int argc, char* argv[]){
             return argparse_box(argc, argv);
         case PTYPE_ERR:
             printf("INVALID PRIMITIVE TYPE.\n");
+            printf("POSSIBLE VALUES: 'plane' 'sphere' 'cone' 'box'\n");
     }
     return NULL;
 }
 
 int main(int argc, char *argv[]) {
+    if(argc <= 1) {
+        printf("PLEASE PROVIDE PRIMITIVE ARGUMENT\n");
+        printf("POSSIBLE VALUES: 'plane' 'sphere' 'cone' 'box'\n");
+        return 1;
+    }
     Primitive* tmp = argparse(argc, argv);
     if(tmp == NULL) return 1;
 
