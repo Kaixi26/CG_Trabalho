@@ -49,7 +49,7 @@ Primitive* argparse_sphere(int argc, char* argv[]){
 Primitive* argparse_cone(int argc, char* argv[]){
     if(argc != 7){
         printf("WRONG NUMBER OF ARGUMENTS FOR CONE.\n");
-        printf("Usage %s sphere <x dimension> <y dimension> <z dimension> <divisions> <filename>\n", argv[0]);
+        printf("Usage %s cone <radius> <height> <slices> <stacks> <filename>\n", argv[0]);
         return NULL;
     }
     float* tmp = (float*) calloc(4, sizeof(float));
@@ -65,8 +65,8 @@ Primitive* argparse_cone(int argc, char* argv[]){
 
 Primitive* argparse_box(int argc, char* argv[]){
     if(argc != 7){
-        printf("WRONG NUMBER OF ARGUMENTS FOR CONE.\n");
-        printf("Usage %s sphere <radius> <height> <slices> <stacks> <filename>\n", argv[0]);
+        printf("WRONG NUMBER OF ARGUMENTS FOR BOX.\n");
+        printf("Usage %s box <x dimension> <y dimension> <z dimension> <divisions> <filename>\n", argv[0]);
         return NULL;
     }
     float* tmp = (float*) calloc(4, sizeof(float));
