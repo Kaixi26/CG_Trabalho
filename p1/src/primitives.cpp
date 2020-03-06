@@ -85,13 +85,16 @@ std::tuple<int, Vertex*> Primitive::get_vertices_sphere(){
     int vi = 0;
     for(int i = 0; i<slices; i++)
         for(int j = 0; j<stacks; j++){
-            tmp[vi++] = Vertex::VertexPolar(alpha_d*i-M_PI, beta_d*j-M_PI_2, radius);
-            tmp[vi++] = Vertex::VertexPolar(alpha_d*(i+1)-M_PI, beta_d*j-M_PI_2, radius);
-            tmp[vi++] = Vertex::VertexPolar(alpha_d*(i+1)-M_PI, beta_d*(j+1)-M_PI_2, radius);
-
-            tmp[vi++] = Vertex::VertexPolar(alpha_d*i-M_PI, beta_d*j-M_PI_2, radius);
-            tmp[vi++] = Vertex::VertexPolar(alpha_d*(i+1)-M_PI, beta_d*(j+1)-M_PI_2, radius);
-            tmp[vi++] = Vertex::VertexPolar(alpha_d*i-M_PI, beta_d*(j+1)-M_PI_2, radius);
+            if(j != 0){
+                tmp[vi++] = Vertex::VertexPolar(alpha_d*i-M_PI, beta_d*j-M_PI_2, radius);
+                tmp[vi++] = Vertex::VertexPolar(alpha_d*(i+1)-M_PI, beta_d*j-M_PI_2, radius);
+                tmp[vi++] = Vertex::VertexPolar(alpha_d*(i+1)-M_PI, beta_d*(j+1)-M_PI_2, radius);
+            }
+            if(j != (stacks-1)){
+                tmp[vi++] = Vertex::VertexPolar(alpha_d*i-M_PI, beta_d*j-M_PI_2, radius);
+                tmp[vi++] = Vertex::VertexPolar(alpha_d*(i+1)-M_PI, beta_d*(j+1)-M_PI_2, radius);
+                tmp[vi++] = Vertex::VertexPolar(alpha_d*i-M_PI, beta_d*(j+1)-M_PI_2, radius);
+            }
         }
     std::tuple<int, Vertex*> ret(total_vertices, tmp);
     return ret;
@@ -115,7 +118,7 @@ std::tuple<int, Vertex*> Primitive::get_vertices_cone(){
             tmp[vi++] = Vertex(sin(alpha_diff*(i+1))*curr_rad, j*vertical_diff, cos(alpha_diff*(i+1))*curr_rad);
             tmp[vi++] = Vertex(sin(alpha_diff*i)*upper_rad, (j+1)*vertical_diff, cos(alpha_diff*i)*upper_rad);
 
-            if(i == (slices-1) && j == (stacks-1)) continue;
+            if(j == (stacks-1)) continue;
             tmp[vi++] = Vertex(sin(alpha_diff*(i+1))*curr_rad, j*vertical_diff, cos(alpha_diff*(i+1))*curr_rad);
             tmp[vi++] = Vertex(sin(alpha_diff*(i+1))*upper_rad, (j+1)*vertical_diff, cos(alpha_diff*(i+1))*upper_rad);
             tmp[vi++] = Vertex(sin(alpha_diff*i)*upper_rad, (j+1)*vertical_diff, cos(alpha_diff*i)*upper_rad);

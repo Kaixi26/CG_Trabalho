@@ -60,9 +60,9 @@ struct {
 
     camera_mode cam_mode = EXPLORER;
     // EXPLORER MODE
-    float cam_alpha = 0;
+    float cam_alpha = M_PI_4;
     float cam_beta = M_PI_4;
-    float cam_radius = 3;
+    float cam_radius = 5;
 
     // FREE MODE
     float cam_free_alpha = 0;
