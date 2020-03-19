@@ -15,7 +15,9 @@
 #include <tuple>
 
 #include "../engine/tinyxml2/tinyxml2.h"
+#include "../engine/model_rtree.h"
 #include "../common/vertex.h"
+#include "../common/matrix.h"
 
 using namespace tinyxml2;
 
@@ -45,8 +47,6 @@ const char* help_str = "List of commands:\n"
 "\t\t- move camera in the negative y direction\n"
 ;
 
-XMLDocument DOC;
-
 typedef enum camera_mode {
     EXPLORER,
     FREE
@@ -71,6 +71,7 @@ struct {
     float cam_free_y = 0;
     float cam_free_z = 0;
 
+    Model_rtree* model_rtree = NULL;
 } ENGINE_STATE;
 
 void changeSize(int w, int h) {
@@ -261,14 +262,7 @@ void drawModel(XMLNode* modelNode){
     glEnd();
 }
 
-void read_and_draw_scene(){
-    srand(ENGINE_STATE.seed);
-    // clear buffers
-    glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-    // set the camera
-    glLoadIdentity();
+void set_camera(){
     if(ENGINE_STATE.cam_mode == EXPLORER)
         gluLookAt(ENGINE_STATE.cam_radius*cos(ENGINE_STATE.cam_beta)*sin(ENGINE_STATE.cam_alpha),
                   ENGINE_STATE.cam_radius*sin(ENGINE_STATE.cam_beta),
@@ -282,26 +276,25 @@ void read_and_draw_scene(){
                   ENGINE_STATE.cam_free_z + cos(ENGINE_STATE.cam_free_beta)*cos(ENGINE_STATE.cam_free_alpha),
                   0.0f,1.0f,0.0f);
     }
+}
+
+void render_scene(){
+    // clear buffers
+    glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+    // set the camera
+    glLoadIdentity();
+    set_camera();
     if(ENGINE_STATE.draw_axis) draw_axis();
-    
-
-
-    XMLNode* scene = DOC.FirstChildElement("scene");
-    if(scene == NULL){
-        printf("Could not find <scene>.");
-        return;
-    }
-    XMLNode* model = scene->FirstChild();
+    glColor3f(1.0f, 1.0f, 1.0f);
 
     glPolygonMode(GL_FRONT, ENGINE_STATE.polygon_mode);
 
-    printf("Starting to draw models.\n");
-    while(model){
-        if(!strcmp(model->Value(), "model"))
-            drawModel(model);
-        model = model->NextSibling();
-    }
-    printf("Finished drawing models.\n");
+    srand(ENGINE_STATE.seed);
+    ENGINE_STATE.model_rtree->draw(draw_opts{
+        color : (ENGINE_STATE.rand_color ? DRAW_OPTS_COLOR_RAND : DRAW_OPTS_COLOR_DEFAULT)
+    });
 
     glutSwapBuffers();
 }
@@ -316,11 +309,14 @@ int main(int argc, char** argv){
         return 0;
     }
 
-    DOC.LoadFile(argv[1]);
-    if(DOC.ErrorID()){
-        printf("%s\n", DOC.ErrorStr());
-        return DOC.ErrorID();
+    XMLDocument doc;
+    doc.LoadFile(argv[1]);
+    if(doc.ErrorID()){
+        printf("%s\n", doc.ErrorStr());
+        return doc.ErrorID();
     }
+    ENGINE_STATE.model_rtree = new Model_rtree(doc.FirstChildElement("scene"));
+
 //  init GLUT and the window
     glutInit(&argc, argv);
     glutInitDisplayMode(GLUT_DEPTH|GLUT_DOUBLE|GLUT_RGBA);
@@ -329,7 +325,7 @@ int main(int argc, char** argv){
     glutCreateWindow("ENGINE");
         
 // Required callback registry 
-    glutDisplayFunc(read_and_draw_scene);
+    glutDisplayFunc(render_scene);
     glutKeyboardFunc(keyboard_handler);
 	glutReshapeFunc(changeSize);
 

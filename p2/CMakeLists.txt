@@ -7,7 +7,8 @@ set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 set(CMAKE_BUILD_TYPE Debug)
 
 add_executable(generator ./src/generator/generator.cpp ./src/generator/primitives.cpp ./src/common/vertex.cpp)
-add_executable(${PROJECT_NAME} ./src/engine/engine.cpp ./src/common/vertex.cpp ./src/engine/tinyxml2/tinyxml2.cpp)
+add_executable(${PROJECT_NAME} ./src/engine/engine.cpp ./src/common/vertex.cpp ./src/engine/tinyxml2/tinyxml2.cpp ./src/common/matrix.cpp ./src/engine/model_rtree.cpp ./src/engine/model.cpp)
+add_executable(test ./src/common/test.cpp ./src/common/vertex.cpp ./src/engine/tinyxml2/tinyxml2.cpp ./src/common/matrix.cpp ./src/engine/model_rtree.cpp ./src/engine/model.cpp)
 
 find_package(OpenGL REQUIRED)
 include_directories(${OpenGL_INCLUDE_DIRS})
@@ -29,6 +30,8 @@ if  (WIN32)
   include_directories(${GLUT_DIR})
   link_directories(${GLUT_DIR})
   target_link_libraries(${PROJECT_NAME} ${OPENGL_LIBRARIES} ${GLUT_DIR}/glut32.lib )
+  ##linking opengl into test executable
+  target_link_libraries(test ${OPENGL_LIBRARIES} ${GLUT_DIR}/glut32.lib )
   if (EXISTS "${GLUT_DIR}/glut32.dll")
 	file(COPY ${GLUT_DIR}/glut32.dll DESTINATION ${CMAKE_BINARY_DIR})
   endif()
@@ -40,6 +43,8 @@ else (WIN32) #Linux and Mac
   link_directories(${GLUT_LIBRARY_DIRS})
   add_definitions(${GLUT_DEFINITIONS})
   target_link_libraries(${PROJECT_NAME} ${OPENGL_LIBRARIES} ${GLUT_LIBRARY} )
+  ##linking opengl into test executable
+  target_link_libraries(test ${OPENGL_LIBRARIES} ${GLUT_LIBRARY} )
   if(NOT GLUT_FOUND)
 	message(ERROR ": GLUT not found!")
   endif(NOT GLUT_FOUND)
