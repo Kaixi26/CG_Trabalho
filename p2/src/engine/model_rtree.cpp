@@ -2,23 +2,41 @@
 
 // TODO: FUNCTION TO CORRECTLY DEALLOCATE CLASS
 
+XMLNode* nextNonCommentSibling(XMLNode* node){
+    for(node = node->NextSibling(); node != NULL && node->ToComment() != NULL; node = node->NextSibling())
+        ;
+    return node;
+}
+
+XMLNode* firstNonCommentChild(XMLNode* node){
+    for(node = node->FirstChild(); node != NULL && node->ToComment() != NULL; node = node->NextSibling())
+        ;
+    return node;
+}
+
 Model_rtree::Model_rtree(XMLNode* node){
     while(node){
+        if(node->ToComment() != NULL) node = node->NextSibling();
+
         const char* node_name = node->ToElement()->Name();
-        //printf("%s\n", node_name);
+
+        printf("%s\n", node_name);
         if(!strcmp(node_name, "scene"))
-            node = node->FirstChild();
+            node = firstNonCommentChild(node);
         else if(!strcmp(node_name, "group")){
-            add_child(new Model_rtree(node->FirstChild()));
-            if(node->NextSibling())
-                add_child(new Model_rtree(node->NextSibling()));
+            add_child(new Model_rtree(firstNonCommentChild(node)));
+            XMLNode* next = nextNonCommentSibling(node);
+            if(next) add_child(new Model_rtree(next));
             break;
         }
         else if(!strcmp(node_name, "models")){
-            for(XMLNode* tmp = node->FirstChild(); tmp; tmp = tmp->NextSibling())
+            for(XMLNode* tmp = firstNonCommentChild(node); tmp; tmp = nextNonCommentSibling(tmp)){
                 add_child(new Model_rtree(tmp));
-            if(node->NextSibling())
-                add_child(new Model_rtree(node->NextSibling()));
+            }
+            XMLNode* next = nextNonCommentSibling(node);
+            if(next){
+                add_child(new Model_rtree(next));
+            }
             break;
         }
         else if(!strcmp(node_name, "translate")){
@@ -31,7 +49,7 @@ Model_rtree::Model_rtree(XMLNode* node){
                 node->ToElement()->FloatAttribute("X", 0),
                 node->ToElement()->FloatAttribute("Y", 0),
                 node->ToElement()->FloatAttribute("Z", 0));
-            node = node->NextSibling();
+            node = nextNonCommentSibling(node);
         }
         else if(!strcmp(node_name, "scale")){
             if(this->type == RTREE_UNDEFINED){
@@ -43,7 +61,7 @@ Model_rtree::Model_rtree(XMLNode* node){
                 node->ToElement()->FloatAttribute("X", 1),
                 node->ToElement()->FloatAttribute("Y", 1),
                 node->ToElement()->FloatAttribute("Z", 1));
-            node = node->NextSibling();
+            node = nextNonCommentSibling(node);
         }
         else if(!strcmp(node_name, "rotate")){
             if(this->type == RTREE_UNDEFINED){
@@ -56,14 +74,14 @@ Model_rtree::Model_rtree(XMLNode* node){
                 node->ToElement()->FloatAttribute("axisX", 0),
                 node->ToElement()->FloatAttribute("axisY", 0),
                 node->ToElement()->FloatAttribute("axisZ", 0));
-            node = node->NextSibling();
+            node = nextNonCommentSibling(node);
         }
         else if(!strcmp(node_name, "model")){
             this->type = RTREE_MODEL;
             this->data = new Model(node->ToElement()->Attribute("file"));
             break;
         }
-        else node = node->NextSibling();
+        else node = nextNonCommentSibling(node);
     }
 }
 
