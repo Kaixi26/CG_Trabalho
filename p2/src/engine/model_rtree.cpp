@@ -20,7 +20,7 @@ Model_rtree::Model_rtree(XMLNode* node){
 
         const char* node_name = node->ToElement()->Name();
 
-        printf("%s\n", node_name);
+        //printf("%s\n", node_name);
         if(!strcmp(node_name, "scene"))
             node = firstNonCommentChild(node);
         else if(!strcmp(node_name, "group")){

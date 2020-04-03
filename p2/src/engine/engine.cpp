@@ -61,8 +61,8 @@ struct {
     camera_mode cam_mode = EXPLORER;
     // EXPLORER MODE
     float cam_alpha = M_PI_4;
-    float cam_beta = M_PI_4;
-    float cam_radius = 5;
+    float cam_beta = M_PI_4/2;
+    float cam_radius = 15;
 
     // FREE MODE
     float cam_free_alpha = 0;
@@ -194,13 +194,13 @@ void keyboard_handler(unsigned char key, int x, int y){
             break;
 		case '+':
             if(ENGINE_STATE.cam_mode == EXPLORER)
-			    ENGINE_STATE.cam_radius -= 0.1;
+			    ENGINE_STATE.cam_radius -= 0.2;
             else if(ENGINE_STATE.cam_mode == FREE)
                 ENGINE_STATE.cam_free_y += 0.1;
 			break;
 		case '-':
             if(ENGINE_STATE.cam_mode == EXPLORER)
-			    ENGINE_STATE.cam_radius += 0.1;
+			    ENGINE_STATE.cam_radius += 0.2;
             else if(ENGINE_STATE.cam_mode == FREE)
                 ENGINE_STATE.cam_free_y -= 0.1;
 			break;
@@ -227,40 +227,6 @@ void draw_axis(){
     glEnd();
 }
 
-void drawModel(XMLNode* modelNode){
-    printf("\t%s\n", modelNode->ToElement()
-           ->Attribute("file"));
-
-    int fd = open(modelNode->ToElement()->Attribute("file"), O_RDONLY);
-    if(fd == -1){
-        printf("Failed opening.\n");
-        return;
-    }
-    off_t fsize = lseek(fd, 0, SEEK_END);
-    lseek(fd, 0, SEEK_SET);
-    void* buf = malloc(fsize + 1);
-    read(fd, buf, fsize);
-    close(fd);
-
-    std::tuple<int, Vertex*> vertices = Vertex::parse_array(buf);
-    //glPolygonMode( GL_FRONT_AND_BACK, GL_LINE );
-    glBegin(GL_TRIANGLES);
-    for(int i=0; i<std::get<0>(vertices); i++){
-        if(ENGINE_STATE.rand_color){
-            if(i%3 == 0)
-                glColor3f((float)rand()/INT_MAX, (float)rand()/INT_MAX, (float)rand()/INT_MAX);
-        } else {
-            if((i/3)%2 == 0) glColor3f(1, 1, 1);
-            else if((i/3)%2 == 1) glColor3f(0.5,0.5,0.5);
-        }
-        Vertex tmp = std::get<1>(vertices)[i];
-        //printf("Vertex (%f,%f,%f)\n", tmp.x, tmp.y, tmp.z);
-        glVertex3f(tmp.x, tmp.y, tmp.z);
-        //printf("%d\n", i);
-    }
-    //printf("%d\n", std::get<0>(vertices));
-    glEnd();
-}
 
 void set_camera(){
     if(ENGINE_STATE.cam_mode == EXPLORER)

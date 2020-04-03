@@ -109,7 +109,9 @@ int main(int argc, char *argv[]) {
     int fd = open(argv[argc-1], O_CREAT | O_WRONLY, 0777);
     std::tuple<int,Vertex*> vertices = tmp->get_vertices();
     std::tuple<int, void*> serialized =
-        Vertex::serialize_array(std::get<1>(vertices), std::get<0>(vertices));
+        Vertex::serialize_array(std::get<1>(vertices), (Vertices_t){
+                  .type = VERTT_TRIANGLES
+                , .nvertices = std::get<0>(vertices)});
 
     write(fd, std::get<1>(serialized), std::get<0>(serialized));
     delete(tmp);

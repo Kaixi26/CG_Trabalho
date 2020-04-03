@@ -13,8 +13,8 @@ Model::Model(const char* filename){
     read(fd, buf, fsize);
     close(fd);
 
-    std::tuple<int, Vertex*> vertices = Vertex::parse_array(buf);
-    this->vertex_nr = std::get<0>(vertices);
+    std::tuple<Vertices_t, Vertex*> vertices = Vertex::parse_array(buf);
+    this->vertex_nr = std::get<0>(vertices).nvertices;
     this->vertices = std::get<1>(vertices);
 }
 

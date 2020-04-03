@@ -44,23 +44,17 @@ void Matrix::scale(float x, float y, float z){
 
 void Matrix::rotate(float theta, float x, float y, float z){
     float length = x*x + y*y + z*z;
-    x = -x/length;
-    y = -y/length;
-    z = -z/length;
+    x = x/length;
+    y = y/length;
+    z = z/length;
     float c = cos(theta);
     float s = sin(theta);
     float tmp[4][4] = {
-        {x*x+(1-x*x)*c, x*y*(1-c)-z*s, x*z*(1-c)+y*s, 0},
-        {x*y*(1-c)+z*s, y*y+(1-y*y)*c, y*z*(1-c)-x*s, 0},
-        {x*z*(1-c)-y*s, y*z*(1-c)+x*s, z*z+(1-z*z)*c, 0},
-        {0, 0, 0, 1}
+        {x*x+(1-x*x)*c, x*y*(1-c)+z*s, x*z*(1-c)-y*s, 0},
+        {x*y*(1-c)-z*s, y*y+(1-y*y)*c, y*z*(1-c)+x*s, 0},
+        {x*z*(1-c)+y*s, y*z*(1-c)-x*s, z*z+(1-z*z)*c, 0},
+        {0 , 0, 0, 1}
     };
-    //float tmp[4][4] = {
-    //    {ux*ux + (1-ux*ux)*cos(theta), ux*uy*(1-cos(theta)) - uz*sin(theta), ux*uz*(1-cos(theta)) + uy*sin(theta), 0},
-    //    {ux*uy*(1-cos(theta)) + uz*sin(theta), uy*uy + (1-uy*uy)*cos(theta), uy*uz*(1-cos(theta)) - ux*sin(theta), 0},
-    //    {ux*uz*(1-cos(theta)) - uy*sin(theta), uy*uz*(1-cos(theta)) + ux*sin(theta), uz*uz + (1-uz*uz)*cos(theta), 0},
-    //    {0, 0, 0, 1}
-    //};
     this->mult(Matrix(tmp));
 }
 
