@@ -10,6 +10,7 @@
 #include <sys/stat.h>
 #include <fcntl.h>
 #include <unistd.h>
+#include <string.h>
 
 #include "../generator/primitives.h"
 #include "../common/vertex.h"
@@ -97,12 +98,37 @@ Primitive* argparse(int argc, char* argv[]){
     return NULL;
 }
 
-int main(int argc, char *argv[]) {
+void write_bezier(int argc, char** argv){
+    FILE* fin = fopen(argv[argc-2], "r");
+    int fd = open(argv[argc-1], O_CREAT | O_WRONLY, 0777);
+    if(fd == -1 || fin == NULL){
+        printf("Could not open file.\n");
+        exit(1);
+    }
+    int tesselation = atoi(argv[2]);
+    if(tesselation <= 0){
+        printf("All parameter values should be above 0. ('%s')", argv[2]);
+        exit(1);
+    }
+    std::tuple<int, BezierPatch*> bez = Primitive::parse_bezier(fin);
+    auto vertices = Primitive::get_vertices_bezier(std::get<1>(bez), std::get<0>(bez),tesselation, tesselation);
+    std::tuple<int, void*> serialized =
+        Vertex::serialize_array(std::get<1>(vertices), (Vertices_t){
+                  .type = VERTT_TRIANGLES
+                , .nvertices = std::get<0>(vertices)});
+    write(fd, std::get<1>(serialized), std::get<0>(serialized));
+    printf("Done.\n");
+    exit(0);
+}
+
+int main(int argc, char** argv) {
     if(argc <= 1) {
         printf("PLEASE PROVIDE PRIMITIVE ARGUMENT\n");
-        printf("POSSIBLE VALUES: 'plane' 'sphere' 'cone' 'box'\n");
+        printf("POSSIBLE VALUES: 'plane' 'sphere' 'cone' 'box' 'bezier'\n");
         return 1;
     }
+    if(argc == 5 && !strcmp(argv[1], "bezier"))
+        write_bezier(argc, argv);
     Primitive* tmp = argparse(argc, argv);
     if(tmp == NULL) return 1;
 

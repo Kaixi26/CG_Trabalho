@@ -3,6 +3,8 @@
 
 #include "../common/vertex.h"
 #include <tuple>
+#include <vector>
+#include "bezierpatch.h"
 
 typedef enum {
 PTYPE_ERR = 0,
@@ -24,6 +26,7 @@ class Primitive {
         Primitive(void* buf);
         ~Primitive();
         void* serialize();
+        static std::tuple<int, BezierPatch*> parse_bezier(FILE* f);
         void print();
         static Primitive_type type_parse(const char* str);
     private:
@@ -32,6 +35,7 @@ class Primitive {
         std::tuple<int, Vertex*> get_vertices_cone();
         std::tuple<int, Vertex*> get_vertices_box();
     public:
+        static std::tuple<int, Vertex*> get_vertices_bezier(BezierPatch* bpatch, int size, int divu, int divv);
         std::tuple<int,Vertex*> get_vertices();
         
 };

@@ -10,12 +10,16 @@
 #else
 #include <GL/glut.h>
 #endif
+#include "timed_rot.h"
+#include <vector>
 
 using namespace tinyxml2;
 
 typedef enum {
 RTREE_TRANSFORMATION,
 RTREE_MODEL,
+RTREE_CATMULL,
+RTREE_TIMED_ROTATION,
 RTREE_UNDEFINED,
 RTREE_NULL
 } model_rtree_t;
@@ -34,6 +38,7 @@ class Model_rtree {
         void print();
     private:
         void printAux(int depth);
+        void addUntilTransform(XMLNode* node);
         void add_child(Model_rtree* child);
 };
 

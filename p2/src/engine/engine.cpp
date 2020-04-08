@@ -1,6 +1,7 @@
 #ifdef __APPLE__
 #include <GLUT/glut.h>
 #else
+#include <GL/glew.h>
 #include <GL/glut.h>
 #endif
 
@@ -244,6 +245,7 @@ void set_camera(){
     }
 }
 
+float t = 0;
 void render_scene(){
     // clear buffers
     glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
@@ -259,8 +261,10 @@ void render_scene(){
 
     srand(ENGINE_STATE.seed);
     ENGINE_STATE.model_rtree->draw(draw_opts{
-        color : (ENGINE_STATE.rand_color ? DRAW_OPTS_COLOR_RAND : DRAW_OPTS_COLOR_DEFAULT)
+          color : (ENGINE_STATE.rand_color ? DRAW_OPTS_COLOR_RAND : DRAW_OPTS_COLOR_DEFAULT)
+        , t : t
     });
+    t += 0.01;
 
     glutSwapBuffers();
 }
@@ -275,14 +279,6 @@ int main(int argc, char** argv){
         return 0;
     }
 
-    XMLDocument doc;
-    doc.LoadFile(argv[1]);
-    if(doc.ErrorID()){
-        printf("%s\n", doc.ErrorStr());
-        return doc.ErrorID();
-    }
-    ENGINE_STATE.model_rtree = new Model_rtree(doc.FirstChildElement("scene"));
-
 //  init GLUT and the window
     glutInit(&argc, argv);
     glutInitDisplayMode(GLUT_DEPTH|GLUT_DOUBLE|GLUT_RGBA);
@@ -292,12 +288,29 @@ int main(int argc, char** argv){
         
 // Required callback registry 
     glutDisplayFunc(render_scene);
+    glutIdleFunc(render_scene);
     glutKeyboardFunc(keyboard_handler);
 	glutReshapeFunc(changeSize);
 
 //  OpenGL settings
-    glEnable(GL_DEPTH_TEST);
-    glEnable(GL_CULL_FACE);
+	glEnableClientState(GL_VERTEX_ARRAY);
+	glEnable(GL_DEPTH_TEST);
+	glEnable(GL_CULL_FACE);
+	glPolygonMode(GL_FRONT, GL_LINE);
+
+    glewInit();
+
+    XMLDocument doc;
+    doc.LoadFile(argv[1]);
+    if(doc.ErrorID()){
+        printf("%s\n", doc.ErrorStr());
+        return doc.ErrorID();
+    }
+
+    Model::initBuffers();
+    ENGINE_STATE.model_rtree = new Model_rtree(doc.FirstChildElement("scene"));
+    ENGINE_STATE.model_rtree->print();
+
     
 // enter GLUT's main cycle
     glutMainLoop();

@@ -6,6 +6,7 @@
 
 typedef struct {
     const int color = DRAW_OPTS_COLOR_DEFAULT;
+    const float t = 0;
 } draw_opts;
 
 #endif

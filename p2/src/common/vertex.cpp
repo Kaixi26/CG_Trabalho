@@ -52,6 +52,16 @@ std::tuple<int, void*> Vertex::serialize_array(Vertex* vertices, Vertices_t vert
     return ret_tuple;
 }
 
+
+Vertex Vertex::catmull(std::array<Vertex, 4> v, float t){
+    float tt = t*t;
+    float ttt = t*t*t;
+    return Vertex(
+          (-0.5*ttt + tt - 0.5*t)*v[0].x + (1.5*ttt - 2.5*tt + 1)*v[1].x + (-1.5*ttt + 2*tt + 0.5*t)*v[2].x + (0.5*ttt - 0.5*tt)*v[3].x
+        , (-0.5*ttt + tt - 0.5*t)*v[0].y + (1.5*ttt - 2.5*tt + 1)*v[1].y + (-1.5*ttt + 2*tt + 0.5*t)*v[2].y + (0.5*ttt - 0.5*tt)*v[3].y
+        , (-0.5*ttt + tt - 0.5*t)*v[0].z + (1.5*ttt - 2.5*tt + 1)*v[1].z + (-1.5*ttt + 2*tt + 0.5*t)*v[2].z + (0.5*ttt - 0.5*tt)*v[3].z);
+}
+
 void Vertex::print(){
     printf("Vertex [ %f %f %f ]", this->x, this->y, this->z);
 }

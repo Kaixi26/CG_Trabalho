@@ -11,6 +11,7 @@ using namespace std;
 #include "../common/vertex.h"
 
 
+
 Primitive::Primitive(Primitive_type type, int nr_params, float* params){
     this->type = type;
     this->nr_params = nr_params;
@@ -33,6 +34,7 @@ Primitive::Primitive(void* buf){
     }
 }
 
+
 void* Primitive::serialize(){
     size_t size = sizeof(Primitive_type) + sizeof(int) + nr_params*sizeof(float);
     void* ret = malloc(size);
@@ -46,6 +48,43 @@ void* Primitive::serialize(){
         tmp += sizeof(float);
     }
     return ret;
+}
+
+
+std::tuple<int, BezierPatch*> Primitive::parse_bezier(FILE* f){
+    int n_patches;
+	int n_points;
+	char tmp[1024];
+	fgets(tmp, 1024, f);
+	sscanf(tmp , "%d\n", &n_patches);
+	std::vector<std::array<float, 16>> ind_patches;
+	ind_patches.reserve(n_patches);
+	for(int i=0; i<n_patches; i++){
+		std::array<float, 16> curr;
+		fgets(tmp, 1024, f);
+		sscanf(tmp , "%f, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f", &curr[0] , &curr[1] , &curr[2] , &curr[3] , &curr[4] , &curr[5] , &curr[6] , &curr[7] , &curr[8] , &curr[9] , &curr[10] , &curr[11] , &curr[12] , &curr[13] , &curr[14] , &curr[15] , &curr[15]);
+		ind_patches[i] = curr;
+	}
+	fgets(tmp, 1024, f);
+	sscanf(tmp , "%d", &n_points);
+	std::vector<Point> points;
+	points.reserve(n_points);
+	for(int i=0; i<n_points; i++){
+		std::array<float, 3> curr;
+		fgets(tmp, 1024, f);
+		sscanf(tmp , "%f, %f, %f", &curr[0] , &curr[1] , &curr[2]);
+		points[i] = Point(curr[0], curr[1], curr[2]);
+	}
+	BezierPatch* bpatches = (BezierPatch*)calloc(n_patches, sizeof(BezierPatch));
+	for(int i=0; i<n_patches; i++){
+		bpatches[i] = BezierPatch({
+			  std::array<Point, 4>{ points[ind_patches[i][12]], points[ind_patches[i][13]], points[ind_patches[i][14]], points[ind_patches[i][15]]}
+			, std::array<Point, 4>{ points[ind_patches[i][8]], points[ind_patches[i][9]], points[ind_patches[i][10]], points[ind_patches[i][11]]}
+			, std::array<Point, 4>{ points[ind_patches[i][4]], points[ind_patches[i][5]], points[ind_patches[i][6]], points[ind_patches[i][7]]}
+			, std::array<Point, 4>{ points[ind_patches[i][0]], points[ind_patches[i][1]], points[ind_patches[i][2]], points[ind_patches[i][3]]}
+		});
+	}
+	return std::tuple<int, BezierPatch*> {n_patches, bpatches};  
 }
 
 void Primitive::print(){
@@ -191,6 +230,31 @@ std::tuple<int, Vertex*> Primitive::get_vertices_box(){
             tmp[vi++] = Vertex(x/2, (k+1)*d_y - y/2, (i+1)*d_z - z/2);
             tmp[vi++] = Vertex(x/2, k*d_y - y/2, (i+1)*d_z - z/2);
         }
+    std::tuple<int, Vertex*> ret(total_vertices, tmp);
+    return ret;
+}
+
+std::tuple<int, Vertex*> Primitive::get_vertices_bezier(BezierPatch* bpatch , int size, int divu, int divv){
+    int total_vertices = 6 * size * divu * divv;
+    Vertex* tmp = (Vertex*) calloc(total_vertices, sizeof(Vertex));
+    int vi = 0;
+    Point pt;
+    for(int k=0; k < size; k++)
+        for(int i=0; i<divu; i++)
+            for(int j=0; j<divv; j++){
+                pt = bpatch[k].evalBezier(i/(float)divu, j/(float)divv);
+                tmp[vi++] = Vertex(pt.x, pt.y, pt.z);
+                pt = bpatch[k].evalBezier((i+1)/(float)divu, j/(float)divv);
+                tmp[vi++] = Vertex(pt.x, pt.y, pt.z);
+                pt = bpatch[k].evalBezier((i+1)/(float)divu, (j+1)/(float)divv);
+                tmp[vi++] = Vertex(pt.x, pt.y, pt.z);
+                pt = bpatch[k].evalBezier((i+1)/(float)divu, (j+1)/(float)divv);
+                tmp[vi++] = Vertex(pt.x, pt.y, pt.z);
+                pt = bpatch[k].evalBezier(i/(float)divu, (j+1)/(float)divv);
+                tmp[vi++] = Vertex(pt.x, pt.y, pt.z);
+                pt = bpatch[k].evalBezier(i/(float)divu, j/(float)divv);
+                tmp[vi++] = Vertex(pt.x, pt.y, pt.z);
+            }
     std::tuple<int, Vertex*> ret(total_vertices, tmp);
     return ret;
 }
