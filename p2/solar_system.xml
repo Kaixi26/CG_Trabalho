@@ -301,4 +301,16 @@
 				</group>
 			</group>
 		</group>
+		<group>
+			<translate time="10">
+				<point X="10" Y="0" Z="-2" />
+				<point X="-1" Y="0" Z="-2" />
+				<point X="-3" Y="0" Z="0" />
+				<point X="-1" Y="0" Z="2" />
+				<point X="10" Y="0" Z="2" />
+				<point X="20" Y="0" Z="0" />
+			</translate>
+			<scale X="0.2" Y="0.2" Z="0.2"/>
+      		<models> <model file="meteoroid.3d" /> </models>
+		</group>
 </scene>
