@@ -1,0 +1,304 @@
+<scene>
+	<!-- SUN-->
+	<group>
+		<scale X="1.0" Y="1.0" Z="1.0"/>
+			<models> <model file="sphere.3d" /> </models>
+	</group>
+		<!-- MERCURY AND MOONS-->
+		<group>
+      		<rotate axisX="0" axisY="1" axisZ="0" time="10"/>
+			<rotate axisX="0.0" axisY="1.0" axisZ="0.0" angle="311.715"/>
+			<translate X="2.0"/>
+			<rotate axisX="-0.0" axisY="-1.0" axisZ="-0.0" angle="311.715"/>
+			<!-- MERCURY -->
+			<group>
+				<group>
+					<scale X="0.15" Y="0.15" Z="0.15"/>
+					<models> <model file="sphere.3d" /> </models>
+				</group>
+			</group>
+		</group>
+		<!-- VENUS AND MOONS-->
+		<group>
+      		<rotate axisX="0" axisY="1" axisZ="0" time="11"/>
+			<rotate axisX="0.0" axisY="1.0" axisZ="0.0" angle="298.0179"/>
+			<translate X="4.0"/>
+			<rotate axisX="-0.0" axisY="-1.0" axisZ="-0.0" angle="298.0179"/>
+			<!-- VENUS -->
+			<group>
+				<group>
+					<scale X="0.25" Y="0.25" Z="0.25"/>
+					<models> <model file="sphere.3d" /> </models>
+				</group>
+			</group>
+		</group>
+		<!-- EARTH AND MOONS-->
+		<group>
+      		<rotate axisX="0" axisY="1" axisZ="0" time="12"/>
+			<rotate axisX="0.0" axisY="1.0" axisZ="0.0" angle="55.522434"/>
+			<translate X="6.0"/>
+			<rotate axisX="-0.0" axisY="-1.0" axisZ="-0.0" angle="55.522434"/>
+			<!-- EARTH -->
+			<group>
+				<group>
+					<scale X="0.3" Y="0.3" Z="0.3"/>
+					<models> <model file="sphere.3d" /> </models>
+				</group>
+			</group>
+			<!-- MOON -->
+			<group>
+				<rotate axisX="0.0" axisY="0.0" axisZ="1.0" angle="0.0"/>
+				<translate X="0.5"/>
+				<group>
+					<scale X="5.0e-2" Y="5.0e-2" Z="5.0e-2"/>
+					<models> <model file="sphere.3d" /> </models>
+				</group>
+			</group>
+		</group>
+		<!-- MARS AND MOONS-->
+		<group>
+      		<rotate axisX="0" axisY="1" axisZ="0" time="13"/>
+			<rotate axisX="0.0" axisY="1.0" axisZ="0.0" angle="29.900988"/>
+			<translate X="9.0"/>
+			<rotate axisX="-0.0" axisY="-1.0" axisZ="-0.0" angle="29.900988"/>
+			<!-- MARS -->
+			<group>
+				<group>
+					<scale X="0.2" Y="0.2" Z="0.2"/>
+					<models> <model file="sphere.3d" /> </models>
+				</group>
+			</group>
+		</group>
+		<!-- JUPITER AND MOONS-->
+		<group>
+      		<rotate axisX="0" axisY="1" axisZ="0" time="13"/>
+			<rotate axisX="0.0" axisY="1.0" axisZ="0.0" angle="215.30972"/>
+			<translate X="12.0"/>
+			<rotate axisX="-0.0" axisY="-1.0" axisZ="-0.0" angle="215.30972"/>
+			<!-- JUPITER -->
+			<group>
+				<group>
+					<scale X="0.7" Y="0.7" Z="0.7"/>
+					<models> <model file="sphere.3d" /> </models>
+				</group>
+			</group>
+			<!-- EUROPA -->
+			<group>
+				<rotate axisX="0.0" axisY="1.0" axisZ="0.0" angle="0.0"/>
+				<translate X="1.0"/>
+				<group>
+					<scale X="5.0e-2" Y="5.0e-2" Z="5.0e-2"/>
+					<models> <model file="sphere.3d" /> </models>
+				</group>
+			</group>
+			<!-- LO -->
+			<group>
+				<rotate axisX="0.0" axisY="1.0" axisZ="0.0" angle="90.0"/>
+				<translate X="1.0"/>
+				<group>
+					<scale X="0.1" Y="0.1" Z="0.1"/>
+					<models> <model file="sphere.3d" /> </models>
+				</group>
+			</group>
+			<!-- CALLISTO -->
+			<group>
+				<rotate axisX="0.0" axisY="1.0" axisZ="0.0" angle="180.0"/>
+				<translate X="1.0"/>
+				<group>
+					<scale X="0.15" Y="0.15" Z="0.15"/>
+					<models> <model file="sphere.3d" /> </models>
+				</group>
+			</group>
+			<!-- EUROPA -->
+			<group>
+				<rotate axisX="0.0" axisY="1.0" axisZ="0.0" angle="270.0"/>
+				<translate X="1.0"/>
+				<group>
+					<scale X="0.2" Y="0.2" Z="0.2"/>
+					<models> <model file="sphere.3d" /> </models>
+				</group>
+			</group>
+		</group>
+		<!-- SATURN AND MOONS-->
+		<group>
+      		<rotate axisX="0" axisY="1" axisZ="0" time="14"/>
+			<rotate axisX="0.0" axisY="1.0" axisZ="0.0" angle="57.064404"/>
+			<translate X="15.0"/>
+			<rotate axisX="-0.0" axisY="-1.0" axisZ="-0.0" angle="57.064404"/>
+			<!-- SATURN -->
+			<group>
+				<group>
+					<scale X="0.6" Y="0.6" Z="0.6"/>
+					<models> <model file="sphere.3d" /> </models>
+				</group>
+			</group>
+			<!-- MIMAS -->
+			<group>
+				<rotate axisX="0.0" axisY="1.0" axisZ="0.0" angle="0.0"/>
+				<translate X="2.0"/>
+				<group>
+					<scale X="5.0e-2" Y="5.0e-2" Z="5.0e-2"/>
+					<models> <model file="sphere.3d" /> </models>
+				</group>
+			</group>
+			<!-- ENCELADUS -->
+			<group>
+				<rotate axisX="0.0" axisY="1.0" axisZ="0.0" angle="30.0"/>
+				<translate X="2.0"/>
+				<group>
+					<scale X="7.0e-2" Y="7.0e-2" Z="7.0e-2"/>
+					<models> <model file="sphere.3d" /> </models>
+				</group>
+			</group>
+			<!-- THETHYS -->
+			<group>
+				<rotate axisX="0.0" axisY="1.0" axisZ="0.0" angle="60.0"/>
+				<translate X="2.0"/>
+				<group>
+					<scale X="9.0e-2" Y="9.0e-2" Z="9.0e-2"/>
+					<models> <model file="sphere.3d" /> </models>
+				</group>
+			</group>
+			<!-- DIONE -->
+			<group>
+				<rotate axisX="0.0" axisY="1.0" axisZ="0.0" angle="90.0"/>
+				<translate X="2.0"/>
+				<group>
+					<scale X="0.11" Y="0.11" Z="0.11"/>
+					<models> <model file="sphere.3d" /> </models>
+				</group>
+			</group>
+			<!-- LAPETUS -->
+			<group>
+				<rotate axisX="0.0" axisY="1.0" axisZ="0.0" angle="120.0"/>
+				<translate X="2.0"/>
+				<group>
+					<scale X="0.13" Y="0.13" Z="0.13"/>
+					<models> <model file="sphere.3d" /> </models>
+				</group>
+			</group>
+			<!-- RHEA -->
+			<group>
+				<rotate axisX="0.0" axisY="1.0" axisZ="0.0" angle="150.0"/>
+				<translate X="2.0"/>
+				<group>
+					<scale X="0.17" Y="0.17" Z="0.17"/>
+					<models> <model file="sphere.3d" /> </models>
+				</group>
+			</group>
+			<!-- TITAN -->
+			<group>
+				<rotate axisX="0.0" axisY="1.0" axisZ="0.0" angle="180.0"/>
+				<translate X="2.0"/>
+				<group>
+					<scale X="0.2" Y="0.2" Z="0.2"/>
+					<models> <model file="sphere.3d" /> </models>
+				</group>
+			</group>
+		</group>
+		<!-- URANUS AND MOONS-->
+		<group>
+      		<rotate axisX="0" axisY="1" axisZ="0" time="15"/>
+			<rotate axisX="0.0" axisY="1.0" axisZ="0.0" angle="224.53091"/>
+			<translate X="18.0"/>
+			<rotate axisX="-0.0" axisY="-1.0" axisZ="-0.0" angle="224.53091"/>
+			<!-- URANUS -->
+			<group>
+				<group>
+					<scale X="0.5" Y="0.5" Z="0.5"/>
+					<models> <model file="sphere.3d" /> </models>
+				</group>
+			</group>
+			<!-- MIRANDA -->
+			<group>
+				<rotate axisX="0.0" axisY="1.0" axisZ="0.0" angle="60.0"/>
+				<translate X="1.0"/>
+				<group>
+					<scale X="5.0e-2" Y="5.0e-2" Z="5.0e-2"/>
+					<models> <model file="sphere.3d" /> </models>
+				</group>
+			</group>
+			<!-- ARIEL -->
+			<group>
+				<rotate axisX="0.0" axisY="1.0" axisZ="0.0" angle="120.0"/>
+				<translate X="1.0"/>
+				<group>
+					<scale X="1.0e-2" Y="1.0e-2" Z="1.0e-2"/>
+					<models> <model file="sphere.3d" /> </models>
+				</group>
+			</group>
+			<!-- UMBRIEL -->
+			<group>
+				<rotate axisX="0.0" axisY="1.0" axisZ="0.0" angle="180.0"/>
+				<translate X="1.0"/>
+				<group>
+					<scale X="0.12" Y="0.12" Z="0.12"/>
+					<models> <model file="sphere.3d" /> </models>
+				</group>
+			</group>
+			<!-- OBERON -->
+			<group>
+				<rotate axisX="0.0" axisY="1.0" axisZ="0.0" angle="220.0"/>
+				<translate X="1.0"/>
+				<group>
+					<scale X="0.16" Y="0.16" Z="0.16"/>
+					<models> <model file="sphere.3d" /> </models>
+				</group>
+			</group>
+			<!-- TITANIA -->
+			<group>
+				<rotate axisX="0.0" axisY="1.0" axisZ="0.0" angle="280.0"/>
+				<translate X="1.0"/>
+				<group>
+					<scale X="0.2" Y="0.2" Z="0.2"/>
+					<models> <model file="sphere.3d" /> </models>
+				</group>
+			</group>
+		</group>
+		<!-- NEPTUNE AND MOONS-->
+		<group>
+      		<rotate axisX="0" axisY="1" axisZ="0" time="16"/>
+			<rotate axisX="0.0" axisY="1.0" axisZ="0.0" angle="306.65192"/>
+			<translate X="21.0"/>
+			<rotate axisX="-0.0" axisY="-1.0" axisZ="-0.0" angle="306.65192"/>
+			<!-- NEPTUNE -->
+			<group>
+				<group>
+					<scale X="0.4" Y="0.4" Z="0.4"/>
+					<models> <model file="sphere.3d" /> </models>
+				</group>
+			</group>
+			<!-- TRITON -->
+			<group>
+				<rotate axisX="0.0" axisY="1.0" axisZ="0.0" angle="0.0"/>
+				<translate X="1.0"/>
+				<group>
+					<scale X="0.1" Y="0.1" Z="0.1"/>
+					<models> <model file="sphere.3d" /> </models>
+				</group>
+			</group>
+		</group>
+		<!-- PLUTO AND MOONS-->
+		<group>
+      		<rotate axisX="0" axisY="1" axisZ="0" time="17"/>
+			<rotate axisX="0.0" axisY="1.0" axisZ="0.0" angle="258.9939"/>
+			<translate X="24.0"/>
+			<rotate axisX="-0.0" axisY="-1.0" axisZ="-0.0" angle="258.9939"/>
+			<!-- PLUTO -->
+			<group>
+				<group>
+					<scale X="0.1" Y="0.1" Z="0.1"/>
+					<models> <model file="sphere.3d" /> </models>
+				</group>
+			</group>
+			<!-- CHARON -->
+			<group>
+				<rotate axisX="0.0" axisY="0.0" axisZ="0.0" angle="0.0"/>
+				<translate X="3.0"/>
+				<group>
+					<scale X="0.1" Y="0.1" Z="0.1"/>
+					<models> <model file="sphere.3d" /> </models>
+				</group>
+			</group>
+		</group>
+</scene>

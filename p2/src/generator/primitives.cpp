@@ -62,7 +62,7 @@ std::tuple<int, BezierPatch*> Primitive::parse_bezier(FILE* f){
 	for(int i=0; i<n_patches; i++){
 		std::array<float, 16> curr;
 		fgets(tmp, 1024, f);
-		sscanf(tmp , "%f, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f", &curr[0] , &curr[1] , &curr[2] , &curr[3] , &curr[4] , &curr[5] , &curr[6] , &curr[7] , &curr[8] , &curr[9] , &curr[10] , &curr[11] , &curr[12] , &curr[13] , &curr[14] , &curr[15] , &curr[15]);
+		sscanf(tmp , "%f, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f", &curr[0] , &curr[1] , &curr[2] , &curr[3] , &curr[4] , &curr[5] , &curr[6] , &curr[7] , &curr[8] , &curr[9] , &curr[10] , &curr[11] , &curr[12] , &curr[13] , &curr[14] , &curr[15]);
 		ind_patches[i] = curr;
 	}
 	fgets(tmp, 1024, f);

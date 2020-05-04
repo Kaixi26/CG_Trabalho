@@ -66,17 +66,15 @@ void Model::draw(){
 
 void Model::draw(const draw_opts opts){
     srand(0);
-    glBegin(GL_TRIANGLES);
-    for(int i=0; i<this->vertex_nr; i++){
-        if(opts.color == DRAW_OPTS_COLOR_RAND){
-            if(i%3 == 0) glColor3f((float)rand()/INT_MAX, (float)rand()/INT_MAX, (float)rand()/INT_MAX);
-            glVertex3f( this->vertices[i*3]
-                      , this->vertices[i*3+1]
-                      , this->vertices[i*3+2]);
+    if (opts.color == DRAW_OPTS_COLOR_DEFAULT) {
+        glBegin(GL_TRIANGLES);
+        for (int i = 0; i < this->vertex_nr; i++) {
+            if (i % 3 == 0) glColor3f((float)rand() / INT_MAX, (float)rand() / INT_MAX, (float)rand() / INT_MAX);
+            glVertex3f(this->vertices[i * 3], this->vertices[i * 3 + 1], this->vertices[i * 3 + 2]);
         }
+        glEnd();
     }
-    glEnd();
-    if(opts.color != DRAW_OPTS_COLOR_RAND){
+    if(opts.color == DRAW_OPTS_COLOR_VBO){
         glColor3f(1,1,1);
         glBindBuffer(GL_ARRAY_BUFFER, VBOBuffers.buffers[this->buffer_num]);
         glVertexPointer(3, GL_FLOAT, 0, 0);

@@ -245,7 +245,6 @@ void set_camera(){
     }
 }
 
-float t = 0;
 void render_scene(){
     // clear buffers
     glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
@@ -260,11 +259,11 @@ void render_scene(){
     glPolygonMode(GL_FRONT, ENGINE_STATE.polygon_mode);
 
     srand(ENGINE_STATE.seed);
+    float t = glutGet(GLUT_ELAPSED_TIME)/(float)1000;
     ENGINE_STATE.model_rtree->draw(draw_opts{
-          color : (ENGINE_STATE.rand_color ? DRAW_OPTS_COLOR_RAND : DRAW_OPTS_COLOR_DEFAULT)
+          color : (ENGINE_STATE.rand_color ? DRAW_OPTS_COLOR_VBO : DRAW_OPTS_COLOR_DEFAULT)
         , t : t
     });
-    t += 0.01;
 
     glutSwapBuffers();
 }

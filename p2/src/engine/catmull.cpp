@@ -5,16 +5,17 @@ void Catmull::insert(Vertex v){
 }
 
 
-Vertex Catmull::getAt(float t){
-    int i = (int)t;
-    t -= (int)t;
+Vertex Catmull::getAt(float te){
+    float rt = (te * this->verts.size()) / time;
+    int i = (int)rt;
+    rt -= (int)rt;
     return Vertex::catmull(
         std::array<Vertex, 4>{
               this->verts[i%this->verts.size()]
             , this->verts[(i+1)%this->verts.size()]
             , this->verts[(i+2)%this->verts.size()]
             , this->verts[(i+3)%this->verts.size()]
-            }, t);
+            }, rt);
 }
 
 void Catmull::print(){

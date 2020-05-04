@@ -61,6 +61,7 @@ Model_rtree::Model_rtree(XMLNode* node){
                 this->type = RTREE_CATMULL;
                 this->data = calloc(1, sizeof(Catmull));
                 this->data = new Catmull();
+                ((Catmull*)this->data)->time = node->ToElement()->FloatAttribute("time");
                 for(XMLNode* tmp = firstNonCommentChild(node); tmp; tmp = nextNonCommentSibling(tmp)){
                     ((Catmull*)(this->data))->insert(Vertex(
                           tmp->ToElement()->FloatAttribute("X", 0)

@@ -7,6 +7,7 @@
 class Catmull{
     public:
         std::vector<Vertex> verts;
+        float time;
     public:
         void insert(Vertex);
         Vertex getAt(float t);
