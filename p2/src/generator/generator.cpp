@@ -14,6 +14,7 @@
 
 #include "../generator/primitives.h"
 #include "../common/vertex.h"
+#include "../common/serialize_model.h"
 
 Primitive* argparse_plane(int argc, char* argv[]){
     if(argc != 4){
@@ -112,11 +113,21 @@ void write_bezier(int argc, char** argv){
     }
     std::tuple<int, BezierPatch*> bez = Primitive::parse_bezier(fin);
     auto vertices = Primitive::get_vertices_bezier(std::get<1>(bez), std::get<0>(bez),tesselation, tesselation);
-    std::tuple<int, void*> serialized =
-        Vertex::serialize_array(std::get<1>(vertices), (Vertices_t){
-                  .type = VERTT_TRIANGLES
-                , .nvertices = std::get<0>(vertices)});
+    auto normals  = Primitive::get_normals_bezier(std::get<1>(bez), std::get<0>(bez),tesselation, tesselation);
+    auto textures = Primitive::get_textures_bezier(std::get<1>(bez), std::get<0>(bez),tesselation, tesselation);
+    Serialize_model* m = new Serialize_model(
+        Vertex::convert(vertices)
+      , Vertex::convert(normals)
+      , textures);
+    auto serialized = m->serialize();
     write(fd, std::get<1>(serialized), std::get<0>(serialized));
+
+//    std::tuple<int, void*> serialized =
+//        Vertex::serialize_array(std::get<1>(vertices), (Vertices_t){
+//                  .type = VERTT_TRIANGLES
+//                , .nvertices = std::get<0>(vertices)});
+//    write(fd, std::get<1>(serialized), std::get<0>(serialized));
+
     printf("Done.\n");
     exit(0);
 }
@@ -127,21 +138,26 @@ int main(int argc, char** argv) {
         printf("POSSIBLE VALUES: 'plane' 'sphere' 'cone' 'box' 'bezier'\n");
         return 1;
     }
-    if(argc == 5 && !strcmp(argv[1], "bezier"))
-        write_bezier(argc, argv);
+    if(!strcmp(argv[1], "bezier")){
+        if (argc == 5 && !strcmp(argv[1], "bezier"))
+            write_bezier(argc, argv);
+        else {
+            fprintf(stderr, "Usage:%s bezier <tesselation> <infile> <outfile>\n", argv[0]);
+            exit(1);
+        }
+        exit(0);
+    }
     Primitive* tmp = argparse(argc, argv);
     if(tmp == NULL) return 1;
 
     int fd = open(argv[argc-1], O_CREAT | O_WRONLY, 0777);
-    std::tuple<int,Vertex*> vertices = tmp->get_vertices();
-    std::tuple<int, void*> serialized =
-        Vertex::serialize_array(std::get<1>(vertices), (Vertices_t){
-                  .type = VERTT_TRIANGLES
-                , .nvertices = std::get<0>(vertices)});
+    Serialize_model* m = new Serialize_model(
+        Vertex::convert(tmp->get_vertices())
+      , Vertex::convert(tmp->get_normals())
+      , tmp->get_textures());
+    auto serialized = m->serialize();
 
     write(fd, std::get<1>(serialized), std::get<0>(serialized));
-    delete(tmp);
-    close(fd);
     printf("Done.\n");
     return 0;
 }

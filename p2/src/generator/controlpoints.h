@@ -13,6 +13,7 @@ class ControlPoints {
         ControlPoints(std::array<Point, 4> p);
         std::array<ControlPoints, 2> calcBezier() const;
         Point evalBezier(float t);
+        Point evalBezierNormal(float t);
 
         
 };

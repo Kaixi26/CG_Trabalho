@@ -109,10 +109,45 @@ std::tuple<int, Vertex*> Primitive::get_vertices_plane(){
     tmp[4] = Vertex(-params[0]/2, 0, -params[0]/2);
     tmp[5] = Vertex(-params[0]/2, 0, params[0]/2);
 
+    return std::tuple<int, Vertex*>(6, tmp);
+}
+
+std::tuple<int, Vertex*> Primitive::get_normals_plane(){
+    std::tuple<int, Vertex*> err(0, NULL);
+    if(nr_params != 1) return err;
+    Vertex* tmp = (Vertex*) calloc(6, sizeof(Vertex));
+    tmp[0] = Vertex(0, 1, 0);
+    tmp[1] = Vertex(0, 1, 0);
+    tmp[2] = Vertex(0, 1, 0);
+
+    tmp[3] = Vertex(0, 1, 0);
+    tmp[4] = Vertex(0, 1, 0);
+    tmp[5] = Vertex(0, 1, 0);
+
     std::tuple<int, Vertex*> ret(6, tmp);
     return ret;
 }
 
+std::tuple<int, float*> Primitive::get_textures_plane(){
+    if(nr_params != 1) return std::tuple<int, float*>(0, NULL);
+    float* tex = (float*) calloc(12, sizeof(float));
+    int vi = 0;
+    tex[vi++] = 0;
+    tex[vi++] = 1;
+    tex[vi++] = 1;
+    tex[vi++] = 1;
+    tex[vi++] = 1;
+    tex[vi++] = 0;
+
+    tex[vi++] = 1;
+    tex[vi++] = 0;
+    tex[vi++] = 0;
+    tex[vi++] = 0;
+    tex[vi++] = 0;
+    tex[vi++] = 1;
+
+    return std::tuple<int, float*>(6, tex);
+}
 
 std::tuple<int, Vertex*> Primitive::get_vertices_sphere(){
     float radius = params[0];
@@ -121,7 +156,7 @@ std::tuple<int, Vertex*> Primitive::get_vertices_sphere(){
 	float beta_d = M_PI/stacks;
 	float alpha_d = (2*M_PI)/slices;
     int total_vertices = 3*2*slices*stacks;
-    Vertex* tmp = (Vertex*) calloc(total_vertices, sizeof(Vertex));
+    Vertex* tmp = (Vertex*) calloc(total_vertices*3, sizeof(Vertex));
     int vi = 0;
     for(int i = 0; i<slices; i++)
         for(int j = 0; j<stacks; j++){
@@ -136,9 +171,71 @@ std::tuple<int, Vertex*> Primitive::get_vertices_sphere(){
                 tmp[vi++] = Vertex::VertexPolar(alpha_d*i-M_PI, beta_d*(j+1)-M_PI_2, radius);
             }
         }
-    std::tuple<int, Vertex*> ret(total_vertices, tmp);
+    std::tuple<int, Vertex*> ret(vi, tmp);
     return ret;
 }
+
+std::tuple<int, Vertex*> Primitive::get_normals_sphere(){
+    float radius = params[0];
+    float slices = params[1];
+    float stacks = params[2];
+	float beta_d = M_PI/stacks;
+	float alpha_d = (2*M_PI)/slices;
+    int total_vertices = 3*2*slices*stacks;
+    Vertex* tmp = (Vertex*) calloc(total_vertices*3, sizeof(Vertex));
+    int vi = 0;
+    for(int i = 0; i<slices; i++)
+        for(int j = 0; j<stacks; j++){
+            if(j != 0){
+                tmp[vi++] = Vertex::VertexPolar(alpha_d*i-M_PI, beta_d*j-M_PI_2, 1);
+                tmp[vi++] = Vertex::VertexPolar(alpha_d*(i+1)-M_PI, beta_d*j-M_PI_2, 1);
+                tmp[vi++] = Vertex::VertexPolar(alpha_d*(i+1)-M_PI, beta_d*(j+1)-M_PI_2, 1);
+            }
+            if(j != (stacks-1)){
+                tmp[vi++] = Vertex::VertexPolar(alpha_d*i-M_PI, beta_d*j-M_PI_2, 1);
+                tmp[vi++] = Vertex::VertexPolar(alpha_d*(i+1)-M_PI, beta_d*(j+1)-M_PI_2, 1);
+                tmp[vi++] = Vertex::VertexPolar(alpha_d*i-M_PI, beta_d*(j+1)-M_PI_2, 1);
+            }
+        }
+    std::tuple<int, Vertex*> ret(vi, tmp);
+    return ret;
+}
+
+std::tuple<int, float*> Primitive::get_tex_sphere(){
+    float radius = params[0];
+    float slices = params[1];
+    float stacks = params[2];
+	float beta_d = M_PI/stacks;
+	float alpha_d = (2*M_PI)/slices;
+    int ntex = 3*2*2*slices*stacks;
+    float* tmp = (float*) calloc(2*ntex, sizeof(Vertex));
+    int vi = 0;
+    for(int i = 0; i<slices; i++)
+        for(int j = 0; j<stacks; j++){
+            if(j != 0){
+                tmp[vi++] = (float)i/slices;
+                tmp[vi++] = (float)j/slices; 
+
+                tmp[vi++] = (float)(i+1)/slices;
+                tmp[vi++] = (float)j/slices; 
+
+                tmp[vi++] = (float)(i+1)/slices;
+                tmp[vi++] = (float)(j+1)/slices;
+            }
+            if(j != (stacks-1)){
+                tmp[vi++] = (float)i/slices;
+                tmp[vi++] = (float)j/slices;
+
+                tmp[vi++] = (float)(i+1)/slices;
+                tmp[vi++] = (float)(j+1)/slices;
+
+                tmp[vi++] = (float)i/slices;
+                tmp[vi++] = (float)(j+1)/slices;
+            }
+        }
+    return std::tuple<int, float*>(vi/2, tmp);
+}
+
 
 std::tuple<int, Vertex*> Primitive::get_vertices_cone(){
     float radius = params[0];
@@ -169,6 +266,77 @@ std::tuple<int, Vertex*> Primitive::get_vertices_cone(){
     }
     std::tuple<int, Vertex*> ret(total_vertices, tmp);
     return ret;
+}
+
+std::tuple<int, Vertex*> Primitive::get_normals_cone(){
+    float radius = params[0];
+    float height = params[1];
+    float slices = params[2];
+    float stacks = params[3];
+    const float vertical_diff = height/stacks;
+    const float alpha_diff = (2*M_PI)/slices;
+    int total_vertices = (3*2*slices*stacks-3) + 3*slices;
+    Vertex* tmp = (Vertex*) calloc(total_vertices, sizeof(Vertex));
+    int vi = 0;
+    float beta = tanf(radius/height);
+    for(int i=0; i<slices; i++){
+        for(int j=0; j<stacks; j++){
+            float curr_rad = ((height - j*vertical_diff)*radius) / height;
+            float upper_rad = ((height - (j+1)*vertical_diff)*radius) / height;
+            tmp[vi++] = Vertex::VertexPolar(alpha_diff*i, beta, 1);
+            tmp[vi++] = Vertex::VertexPolar(alpha_diff*(i+1), beta, 1);
+            tmp[vi++] = Vertex::VertexPolar(alpha_diff*i, beta, 1);
+
+            if(j == (stacks-1)) continue;
+            tmp[vi++] = Vertex::VertexPolar(alpha_diff*(i+1), beta, 1);
+            tmp[vi++] = Vertex::VertexPolar(alpha_diff*(i+1), beta, 1);
+            tmp[vi++] = Vertex::VertexPolar(alpha_diff*i, beta, 1);
+        }
+        tmp[vi++] = Vertex(0.0f, -1.0f, 0.0f);
+        tmp[vi++] = Vertex(0.0f, -1.0f, 0.0f);
+        tmp[vi++] = Vertex(0.0f, -1.0f, 0.0f);
+    }
+    return std::tuple<int, Vertex*>(total_vertices, tmp);
+}
+
+std::tuple<int, float*> Primitive::get_textures_cone(){
+    float radius = params[0];
+    float height = params[1];
+    float slices = params[2];
+    float stacks = params[3];
+    const float vertical_diff = height/stacks;
+    const float alpha_diff = (2*M_PI)/slices;
+    int ntex = (3*2*slices*stacks-3) + 3*slices;
+    float* tex = (float*) calloc(2*ntex, sizeof(float));
+    int vi = 0;
+    for(int i=0; i<slices; i++){
+        for(int j=0; j<stacks; j++){
+            float curr_rad = ((height - j*vertical_diff)*radius) / height;
+            float upper_rad = ((height - (j+1)*vertical_diff)*radius) / height;
+            tex[vi++] = i/(float)slices;
+            tex[vi++] = j/(float)stacks;
+            tex[vi++] = (i+1)/(float)slices;
+            tex[vi++] = j/(float)stacks;
+            tex[vi++] = i/(float)slices;
+            tex[vi++] = (j+1)/(float)stacks;
+
+            if(j == (stacks-1)) continue;
+
+            tex[vi++] = (i+1)/(float)slices;
+            tex[vi++] = j/(float)stacks;
+            tex[vi++] = (i+1)/(float)slices;
+            tex[vi++] = (j+1)/(float)stacks;
+            tex[vi++] = i/(float)slices;
+            tex[vi++] = (j+1)/(float)stacks;
+        }
+        tex[vi++] = 0.5;
+        tex[vi++] = 0.5;
+        tex[vi++] = cos(alpha_diff*(i+1))/2 + 0.5;
+        tex[vi++] = sin(alpha_diff*(i+1))/2 + 0.5;
+        tex[vi++] = cos(alpha_diff*i)/2 + 0.5;
+        tex[vi++] = sin(alpha_diff*i)/2 + 0.5;
+    }
+    return std::tuple<int, float*>(ntex, tex);
 }
 
 std::tuple<int, Vertex*> Primitive::get_vertices_box(){
@@ -234,6 +402,180 @@ std::tuple<int, Vertex*> Primitive::get_vertices_box(){
     return ret;
 }
 
+std::tuple<int, Vertex*> Primitive::get_normals_box(){
+    float x = params[0];
+    float y = params[1];
+    float z = params[2];
+    float div = params[3];
+    const float d_x = x/div;
+    const float d_y = y/div;
+    const float d_z = z/div;
+    int total_vertices = 3*(4*3*(div*div));
+    Vertex* tmp = (Vertex*) calloc(total_vertices, sizeof(Vertex));
+    int vi=0;
+    for(int i=0; i<div; i++)
+        for(int j=0; j<div; j++){
+            tmp[vi++] = Vertex(0, 1, 0);
+            tmp[vi++] = Vertex(0, 1, 0);
+            tmp[vi++] = Vertex(0, 1, 0);
+
+            tmp[vi++] = Vertex(0, 1, 0);
+            tmp[vi++] = Vertex(0, 1, 0);
+            tmp[vi++] = Vertex(0, 1, 0);
+
+            tmp[vi++] = Vertex(0, -1, 0);
+            tmp[vi++] = Vertex(0, -1, 0);
+            tmp[vi++] = Vertex(0, -1, 0);
+
+            tmp[vi++] = Vertex(0, -1, 0);
+            tmp[vi++] = Vertex(0, -1, 0);
+            tmp[vi++] = Vertex(0, -1, 0);
+        }
+    for(int j=0; j<div; j++)
+        for(int k=0; k<div; k++){
+            tmp[vi++] = Vertex(0, 0, 1);
+            tmp[vi++] = Vertex(0, 0, 1);
+            tmp[vi++] = Vertex(0, 0, 1);
+
+            tmp[vi++] = Vertex(0, 0, 1);
+            tmp[vi++] = Vertex(0, 0, 1);
+            tmp[vi++] = Vertex(0, 0, 1);
+
+            tmp[vi++] = Vertex(0, 0, -1);
+            tmp[vi++] = Vertex(0, 0, -1);
+            tmp[vi++] = Vertex(0, 0, -1);
+
+            tmp[vi++] = Vertex(0, 0, -1);
+            tmp[vi++] = Vertex(0, 0, -1);
+            tmp[vi++] = Vertex(0, 0, -1);
+        }
+    for(int i=0; i<div; i++)
+        for(int k=0; k<div; k++){
+
+            tmp[vi++] = Vertex(-1, 0, 0);
+            tmp[vi++] = Vertex(-1, 0, 0);
+            tmp[vi++] = Vertex(-1, 0, 0);
+
+            tmp[vi++] = Vertex(-1, 0, 0);
+            tmp[vi++] = Vertex(-1, 0, 0);
+            tmp[vi++] = Vertex(-1, 0, 0);
+
+            tmp[vi++] = Vertex(1, 0, 0);
+            tmp[vi++] = Vertex(1, 0, 0);
+            tmp[vi++] = Vertex(1, 0, 0);
+
+            tmp[vi++] = Vertex(1, 0, 0);
+            tmp[vi++] = Vertex(1, 0, 0);
+            tmp[vi++] = Vertex(1, 0, 0);
+        }
+    std::tuple<int, Vertex*> ret(total_vertices, tmp);
+    return ret;
+}
+std::tuple<int, float*> Primitive::get_textures_box(){
+    float x = params[0];
+    float y = params[1];
+    float z = params[2];
+    float div = params[3];
+    const float d_x = x/div;
+    const float d_y = y/div;
+    const float d_z = z/div;
+    int ntex = 3*(4*3*(div*div));
+    float* tex = (float*) calloc(2*ntex, sizeof(float));
+    int vi=0;
+    for(int i=0; i<div; i++)
+        for(int j=0; j<div; j++){
+            tex[vi++] = j/(float)div;
+            tex[vi++] = i/(float)div;
+            tex[vi++] = (j+1)/(float)div;
+            tex[vi++] = (i+1)/(float)div;
+            tex[vi++] = (j+1)/(float)div;
+            tex[vi++] = i/(float)div;
+
+            tex[vi++] = j/(float)div;
+            tex[vi++] = i/(float)div;
+            tex[vi++] = j/(float)div;
+            tex[vi++] = (i+1)/(float)div;
+            tex[vi++] = (j+1)/(float)div;
+            tex[vi++] = (i+1)/(float)div;
+
+            tex[vi++] = j/(float)div;
+            tex[vi++] = i/(float)div;
+            tex[vi++] = (j+1)/(float)div;
+            tex[vi++] = i/(float)div;
+            tex[vi++] = (j+1)/(float)div;
+            tex[vi++] = (i+1)/(float)div;
+
+            tex[vi++] = j/(float)div;
+            tex[vi++] = i/(float)div;
+            tex[vi++] = (j+1)/(float)div;
+            tex[vi++] = (i+1)/(float)div;
+            tex[vi++] = j/(float)div;
+            tex[vi++] = (i+1)/(float)div;
+        }
+    for(int j=0; j<div; j++)
+        for(int k=0; k<div; k++){
+            tex[vi++] = j/(float)div;
+            tex[vi++] = k/(float)div;
+            tex[vi++] = (j+1)/(float)div;
+            tex[vi++] = (k+1)/(float)div;
+            tex[vi++] = j/(float)div;
+            tex[vi++] = (k+1)/(float)div;
+
+            tex[vi++] = j/(float)div;
+            tex[vi++] = k/(float)div;
+            tex[vi++] = (j+1)/(float)div;
+            tex[vi++] = k/(float)div;
+            tex[vi++] = (j+1)/(float)div;
+            tex[vi++] = (k+1)/(float)div;
+
+            tex[vi++] = j/(float)div;
+            tex[vi++] = k/(float)div;
+            tex[vi++] = j/(float)div;
+            tex[vi++] = (k+1)/(float)div;
+            tex[vi++] = (j+1)/(float)div;
+            tex[vi++] = (k+1)/(float)div;
+
+            tex[vi++] = j/(float)div;
+            tex[vi++] = k/(float)div;
+            tex[vi++] = (j+1)/(float)div;
+            tex[vi++] = (k+1)/(float)div;
+            tex[vi++] = (j+1)/(float)div;
+            tex[vi++] = k/(float)div;
+        }
+    for(int i=0; i<div; i++)
+        for(int k=0; k<div; k++){
+            tex[vi++] = k/(float)div;
+            tex[vi++] = i/(float)div;
+            tex[vi++] = (k+1)/(float)div;
+            tex[vi++] = (i+1)/(float)div;
+            tex[vi++] = (k+1)/(float)div;
+            tex[vi++] = i/(float)div;
+
+            tex[vi++] = k/(float)div;
+            tex[vi++] = i/(float)div;
+            tex[vi++] = k/(float)div;
+            tex[vi++] = (i+1)/(float)div;
+            tex[vi++] = (k+1)/(float)div;
+            tex[vi++] = (i+1)/(float)div;
+
+            tex[vi++] = k/(float)div;
+            tex[vi++] = i/(float)div;
+            tex[vi++] = (k+1)/(float)div;
+            tex[vi++] = i/(float)div;
+            tex[vi++] = (k+1)/(float)div;
+            tex[vi++] = (i+1)/(float)div;
+
+            tex[vi++] = k/(float)div;
+            tex[vi++] = i/(float)div;
+            tex[vi++] = (k+1)/(float)div;
+            tex[vi++] = (i+1)/(float)div;
+            tex[vi++] = k/(float)div;
+            tex[vi++] = (i+1)/(float)div;
+        }
+    return std::tuple<int, float*>(ntex, tex);
+}
+
+
 std::tuple<int, Vertex*> Primitive::get_vertices_bezier(BezierPatch* bpatch , int size, int divu, int divv){
     int total_vertices = 6 * size * divu * divv;
     Vertex* tmp = (Vertex*) calloc(total_vertices, sizeof(Vertex));
@@ -255,8 +597,57 @@ std::tuple<int, Vertex*> Primitive::get_vertices_bezier(BezierPatch* bpatch , in
                 pt = bpatch[k].evalBezier(i/(float)divu, j/(float)divv);
                 tmp[vi++] = Vertex(pt.x, pt.y, pt.z);
             }
-    std::tuple<int, Vertex*> ret(total_vertices, tmp);
+    std::tuple<int, Vertex*> ret(vi, tmp);
     return ret;
+}
+
+/* TODO: (duh) */
+std::tuple<int, Vertex*> Primitive::get_normals_bezier(BezierPatch* bpatch , int size, int divu, int divv){
+    int total_vertices = 6 * size * divu * divv;
+    Vertex* tmp = (Vertex*) calloc(total_vertices, sizeof(Vertex));
+    int vi = 0;
+    Point pt;
+    for(int k=0; k < size; k++)
+        for(int i=0; i<divu; i++)
+            for(int j=0; j<divv; j++){
+                pt = bpatch[k].evalBezierNormal(i/(float)divu, j/(float)divv);
+                tmp[vi++] = Vertex(pt.x, pt.y, pt.z);
+                pt = bpatch[k].evalBezierNormal((i+1)/(float)divu, j/(float)divv);
+                tmp[vi++] = Vertex(pt.x, pt.y, pt.z);
+                pt = bpatch[k].evalBezierNormal((i+1)/(float)divu, (j+1)/(float)divv);
+                tmp[vi++] = Vertex(pt.x, pt.y, pt.z);
+                pt = bpatch[k].evalBezierNormal((i+1)/(float)divu, (j+1)/(float)divv);
+                tmp[vi++] = Vertex(pt.x, pt.y, pt.z);
+                pt = bpatch[k].evalBezierNormal(i/(float)divu, (j+1)/(float)divv);
+                tmp[vi++] = Vertex(pt.x, pt.y, pt.z);
+                pt = bpatch[k].evalBezierNormal(i/(float)divu, j/(float)divv);
+                tmp[vi++] = Vertex(pt.x, pt.y, pt.z);
+            }
+    std::tuple<int, Vertex*> ret(vi, tmp);
+    return ret;
+}
+
+std::tuple<int, float*> Primitive::get_textures_bezier(BezierPatch* bpatch , int size, int divu, int divv){
+    int ntex = 6 * size * divu * divv;
+    float* tex = (float*) calloc(2*ntex, sizeof(float));
+    int vi = 0;
+    for(int k=0; k < size; k++)
+        for(int i=0; i<divu; i++)
+            for(int j=0; j<divv; j++){
+                tex[vi++] = i/(float)divu;
+                tex[vi++] = j/(float)divv;
+                tex[vi++] = (i+1)/(float)divu;
+                tex[vi++] = (j)/(float)divv;
+                tex[vi++] = (i+1)/(float)divu;
+                tex[vi++] = (j+1)/(float)divv;
+                tex[vi++] = (i+1)/(float)divu;
+                tex[vi++] = (j+1)/(float)divv;
+                tex[vi++] = i/(float)divu;
+                tex[vi++] = (j+1)/(float)divv;
+                tex[vi++] = i/(float)divu;
+                tex[vi++] = j/(float)divv;
+            }
+    return std::tuple<int, float*>(vi/2, tex);
 }
 
 std::tuple<int,Vertex*> Primitive::get_vertices(){
@@ -273,6 +664,37 @@ std::tuple<int,Vertex*> Primitive::get_vertices(){
     std::tuple<int, Vertex*> err(0, NULL);
     return err;
 }
+
+/* TODO: FINISH ALL PRIMITIVES */
+std::tuple<int,Vertex*> Primitive::get_normals(){
+    switch((int)this->type){
+        case PTYPE_SPHERE:
+            return this->get_normals_sphere();
+        case PTYPE_BOX:
+            return this->get_normals_box();
+        case PTYPE_PLANE:
+            return this->get_normals_plane();
+        case PTYPE_CONE:
+            return this->get_normals_cone();
+    }
+    return std::tuple<int, Vertex*>(0, NULL);
+}
+
+/* TODO: FINISH ALL PRIMITIVES */
+std::tuple<int,float*> Primitive::get_textures(){
+    switch((int)this->type){
+        case PTYPE_SPHERE:
+            return this->get_tex_sphere();
+        case PTYPE_BOX:
+            return this->get_textures_box();
+        case PTYPE_PLANE:
+            return this->get_textures_plane();
+        case PTYPE_CONE:
+            return this->get_textures_cone();
+    }
+    return std::tuple<int, float*>(0, NULL);
+}
+
 
 Primitive_type Primitive::type_parse(const char* str){
 

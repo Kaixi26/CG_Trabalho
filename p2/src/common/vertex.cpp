@@ -9,6 +9,18 @@ Vertex::Vertex(float x, float y, float z){
     this->y = y;
     this->z = z;
 }
+
+std::tuple<int, float*> Vertex::convert (std::tuple<int, Vertex*> tup){
+    int nvert = std::get<0>(tup);
+    float* vert = (float*) malloc(3*nvert*sizeof(float));
+    for(int i=0; i<nvert; i++){
+        vert[i*3 + 0] = std::get<1>(tup)[i].x;
+        vert[i*3 + 1] = std::get<1>(tup)[i].y;
+        vert[i*3 + 2] = std::get<1>(tup)[i].z;
+    }
+    return std::tuple<int, float*>(nvert, vert);
+}
+
 Vertex Vertex::VertexPolar(const float alpha, const float beta, const float rad){
     return Vertex(rad*cos(beta)*sin(alpha),
            rad*sin(beta),
@@ -60,6 +72,14 @@ Vertex Vertex::catmull(std::array<Vertex, 4> v, float t){
           (-0.5*ttt + tt - 0.5*t)*v[0].x + (1.5*ttt - 2.5*tt + 1)*v[1].x + (-1.5*ttt + 2*tt + 0.5*t)*v[2].x + (0.5*ttt - 0.5*tt)*v[3].x
         , (-0.5*ttt + tt - 0.5*t)*v[0].y + (1.5*ttt - 2.5*tt + 1)*v[1].y + (-1.5*ttt + 2*tt + 0.5*t)*v[2].y + (0.5*ttt - 0.5*tt)*v[3].y
         , (-0.5*ttt + tt - 0.5*t)*v[0].z + (1.5*ttt - 2.5*tt + 1)*v[1].z + (-1.5*ttt + 2*tt + 0.5*t)*v[2].z + (0.5*ttt - 0.5*tt)*v[3].z);
+}
+
+Vertex Vertex::cross(Vertex vert){
+    return Vertex(
+        this->y*vert.z - this->z*vert.y
+      , this->z*vert.x - this->x*vert.z
+      , this->x*vert.y - this->y*vert.x
+    );
 }
 
 void Vertex::print(){

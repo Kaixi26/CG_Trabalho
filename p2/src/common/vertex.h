@@ -22,10 +22,13 @@ class Vertex{
         Vertex(){};
         Vertex(float x, float y, float z);
 
+        /* converts the vertices to float arrays */
+        static std::tuple<int, float*> convert (std::tuple<int, Vertex*>);
         static Vertex VertexPolar(const float alpha, const float beta, const float rad);
         static std::tuple<Vertices_t, Vertex*> parse_array(void* buf);
         static std::tuple<int, void*> serialize_array(Vertex* vertices, Vertices_t vert_t);
         static Vertex catmull(std::array<Vertex, 4> vert, float t);
+        Vertex cross(Vertex vert);
         void print();
 };
 

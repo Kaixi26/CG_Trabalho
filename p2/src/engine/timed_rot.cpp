@@ -1,4 +1,5 @@
 #include "timed_rot.h"
+#include <stdio.h>
 
 Timed_rot::Timed_rot(Vertex v, float t){
     this->v = v;

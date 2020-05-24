@@ -1,4 +1,5 @@
 #include "catmull.h"
+#include <stdio.h>
 
 void Catmull::insert(Vertex v){
     this->verts.push_back(v);

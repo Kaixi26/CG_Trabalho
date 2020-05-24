@@ -2,6 +2,13 @@
 #include "catmull.h"
 
 // TODO: FUNCTION TO CORRECTLY DEALLOCATE CLASS
+typedef struct {
+    char* type;
+    int light;
+    float pos[4];
+    float dir[4];
+    float cutoff;
+} Light;
 
 XMLNode* nextNonCommentSibling(XMLNode* node){
     for(node = node->NextSibling(); node != NULL && node->ToComment() != NULL; node = node->NextSibling())
@@ -46,7 +53,7 @@ Model_rtree::Model_rtree(XMLNode* node){
             if(next) add_child(new Model_rtree(next));
             break;
         }
-        else if(!strcmp(node_name, "models")){
+        else if(!strcmp(node_name, "models") || !strcmp(node_name, "lights")){
             for(XMLNode* tmp = firstNonCommentChild(node); tmp; tmp = nextNonCommentSibling(tmp)){
                 add_child(new Model_rtree(tmp));
             }
@@ -137,10 +144,41 @@ Model_rtree::Model_rtree(XMLNode* node){
                     return;
                 }
             }
-        }
-        else if(!strcmp(node_name, "model")){
+        } else if(!strcmp(node_name, "model")){
             this->type = RTREE_MODEL;
-            this->data = new Model(node->ToElement()->Attribute("file"));
+            float diff[4] = { node->ToElement()->FloatAttribute("diffR", 0.8) , node->ToElement()->FloatAttribute("diffG", 0.8)
+                , node->ToElement()->FloatAttribute("diffB", 0.8) , 1 };
+            float spec[4] = { node->ToElement()->FloatAttribute("specR", 0) , node->ToElement()->FloatAttribute("specG", 0)
+                , node->ToElement()->FloatAttribute("specB", 0) , 1 };
+            float emis[4] = { node->ToElement()->FloatAttribute("emisR", 0) , node->ToElement()->FloatAttribute("emisG", 0)
+                , node->ToElement()->FloatAttribute("emisB", 0) , 1 };
+            float ambi[4] = { node->ToElement()->FloatAttribute("ambiR", 0.2) , node->ToElement()->FloatAttribute("ambiG", 0.2)
+                , node->ToElement()->FloatAttribute("ambiB", 0.2) , 1 };
+
+            this->data = new Model(node->ToElement()->Attribute("file"), node->ToElement()->Attribute("texture")
+                , diff, spec, emis, ambi);
+            break;
+        } else if(!strcmp(node_name, "light")){
+            this->type = RTREE_LIGHT;
+            static int lighti = 0;
+            float white[4] = {1,1,1,1};
+            Light* light = (Light*) calloc(1, sizeof(Light));
+            light->type = strdup(node->ToElement()->Attribute("type"));
+            light->pos[0] = node->ToElement()->FloatAttribute("posX", 0);
+            light->pos[1] = node->ToElement()->FloatAttribute("posY", 0);
+            light->pos[2] = node->ToElement()->FloatAttribute("posZ", 0);
+            light->pos[3] = 1;
+            light->dir[0] = node->ToElement()->FloatAttribute("dirX", 0);
+            light->dir[1] = node->ToElement()->FloatAttribute("dirY", 0);
+            light->dir[2] = node->ToElement()->FloatAttribute("dirZ", 0);
+            light->dir[3] = !strcmp(light->type, "DIRECTIONAL") ? 0 : 1;
+            light->cutoff = node->ToElement()->FloatAttribute("cutoff", 45);
+            light->light = lighti + GL_LIGHT0;
+            glEnable(light->light);
+            glLightfv(light->light, GL_SPECULAR, white);
+            glLightfv(light->light, GL_DIFFUSE , white);
+            if(lighti < GL_MAX_LIGHTS - 1) lighti++;
+            this->data = (void*) light;
             break;
         }
         else node = nextNonCommentSibling(node);
@@ -176,7 +214,17 @@ void Model_rtree::printAux(int depth){
     }
     else if(this->type == RTREE_MODEL) {
         printf("MODEL ");
-        printf("%d %s\n", ((Model*)this->data)->vertex_nr, ((Model*)this->data)->filename);
+        Model* m = (Model*)this->data;
+        printf("%d %s ", m->sm->nvert, m->filename);
+        printf("diff{%.2f,%.2f,%.2f,%.2f} ", m->diff[0], m->diff[1], m->diff[2], m->diff[3]);
+        printf("spec{%.2f,%.2f,%.2f,%.2f} ", m->spec[0], m->spec[1], m->spec[2], m->spec[3]);
+        printf("ambi{%.2f,%.2f,%.2f,%.2f} ", m->ambi[0], m->ambi[1], m->ambi[2], m->ambi[3]);
+        printf("emis{%.2f,%.2f,%.2f,%.2f}\n", m->emis[0], m->emis[1], m->emis[2], m->emis[3]);
+    }
+    else if(this->type == RTREE_LIGHT) {
+        Light* tmp = (Light*) this->data;
+        printf("LIGHT [%s pos{%f,%f,%f} dir{%f, %f, %f}]\n", tmp->type, tmp->pos[0], tmp->pos[1], tmp->pos[2],
+            tmp->dir[0], tmp->dir[1], tmp->dir[2]);
     }
     for(int i=0; i<this->nextchild; i++)
         children[i]->printAux(depth+1);
@@ -217,6 +265,18 @@ void Model_rtree::draw(const draw_opts draw_opts){
     }
     else if(this->type == RTREE_MODEL)
         ((Model*)this->data)->draw(draw_opts);
+    else if(this->type == RTREE_LIGHT){
+        Light* light = (Light*) this->data;
+        if(!strcmp(light->type, "DIRECTIONAL"))
+            glLightfv(light->light, GL_POSITION, light->dir);
+        else if(!strcmp(light->type, "POINT"))
+            glLightfv(light->light, GL_POSITION, light->pos);
+        else if(!strcmp(light->type, "SPOT")){
+            glLightfv(light->light, GL_POSITION, light->pos);
+            glLightfv(light->light, GL_SPOT_DIRECTION, light->dir);
+            glLightf(light->light, GL_SPOT_CUTOFF, light->cutoff);
+        }
+    }
     else if(this->type == RTREE_UNDEFINED)
         for(int i=0; i<this->nextchild; i++)
             this->children[i]->draw(draw_opts);

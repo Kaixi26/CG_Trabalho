@@ -5,6 +5,8 @@
 #include <GL/glut.h>
 #endif
 
+#include <IL/il.h>
+
 #include <math.h>
 #include <stdio.h>
 
@@ -253,6 +255,7 @@ void render_scene(){
     // set the camera
     glLoadIdentity();
     set_camera();
+
     if(ENGINE_STATE.draw_axis) draw_axis();
     glColor3f(1.0f, 1.0f, 1.0f);
 
@@ -293,11 +296,16 @@ int main(int argc, char** argv){
 
 //  OpenGL settings
 	glEnableClientState(GL_VERTEX_ARRAY);
+    glEnableClientState(GL_NORMAL_ARRAY);
+    glEnableClientState(GL_TEXTURE_COORD_ARRAY);
 	glEnable(GL_DEPTH_TEST);
 	glEnable(GL_CULL_FACE);
+    glEnable(GL_TEXTURE_2D);
+    glEnable(GL_LIGHTING);
 	glPolygonMode(GL_FRONT, GL_LINE);
 
     glewInit();
+    ilInit();
 
     XMLDocument doc;
     doc.LoadFile(argv[1]);
